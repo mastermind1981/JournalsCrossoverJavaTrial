@@ -2,6 +2,9 @@ package com.crossover.trial.journals.service;
 
 import java.io.InputStream;
 
+/**
+ * Service for management journal files
+ */
 public interface FileService {
 
     byte[] getJournalFileAsByteArray(long publisherId, String journalUUID);

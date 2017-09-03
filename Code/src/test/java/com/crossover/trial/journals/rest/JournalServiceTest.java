@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.crossover.trial.journals.Application;
 import com.crossover.trial.journals.model.Journal;
@@ -81,10 +82,8 @@ public class JournalServiceTest {
 		User user = getUser("publisher2");
 		Optional<Publisher> p = publisherRepository.findByUser(user);
 
-		Journal journal = new Journal();
-		journal.setName("New Journal");
 
-		journalService.publish(p.get(), journal, 1L);
+		journalService.publish(p.get(), null, NEW_JOURNAL_NAME, 1L);
 	}
 
 	@Test(expected = ServiceException.class)
@@ -92,10 +91,7 @@ public class JournalServiceTest {
 		User user = getUser("publisher2");
 		Optional<Publisher> p = publisherRepository.findByUser(user);
 
-		Journal journal = new Journal();
-		journal.setName("New Journal");
-
-		journalService.publish(p.get(), journal, 150L);
+		journalService.publish(p.get(), null, NEW_JOURNAL_NAME, 150L);
 	}
 
 	@Test()
@@ -103,11 +99,8 @@ public class JournalServiceTest {
 		User user = getUser("publisher2");
 		Optional<Publisher> p = publisherRepository.findByUser(user);
 
-		Journal journal = new Journal();
-		journal.setName(NEW_JOURNAL_NAME);
-		journal.setUuid("SOME_EXTERNAL_ID");
 		try {
-			journalService.publish(p.get(), journal, 3L);
+			journalService.publish(p.get(), UUID.randomUUID().toString(), NEW_JOURNAL_NAME, 3L);
 		} catch (ServiceException e) {
 			fail(e.getMessage());
 		}

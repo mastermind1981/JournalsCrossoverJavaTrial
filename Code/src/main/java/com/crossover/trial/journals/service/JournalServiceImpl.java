@@ -33,12 +33,17 @@ public class JournalServiceImpl implements JournalService {
 
 	private CategoryRepository categoryRepository;
 
+	private NotificationService notificationService;
+
 	@Autowired
-	public JournalServiceImpl(FileService fileService, JournalRepository journalRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
+	public JournalServiceImpl(FileService fileService, JournalRepository journalRepository,
+														UserRepository userRepository, CategoryRepository categoryRepository,
+														NotificationService notificationService) {
 		this.fileService = fileService;
 		this.journalRepository = journalRepository;
 		this.userRepository = userRepository;
 		this.categoryRepository = categoryRepository;
+		this.notificationService = notificationService;
 	}
 
 	@Override
@@ -61,15 +66,20 @@ public class JournalServiceImpl implements JournalService {
 	}
 
 	@Override
-	public Journal publish(Publisher publisher, Journal journal, Long categoryId) throws ServiceException {
+	public Journal publish(Publisher publisher, String journalUUID, String journalName, Long categoryId) throws ServiceException {
 		Category category = categoryRepository.findOne(categoryId);
 		if(category == null) {
 			throw new ServiceException("Category not found");
 		}
+		Journal journal = new Journal();
+		journal.setName(journalName);
+		journal.setUuid(journalUUID);
 		journal.setPublisher(publisher);
 		journal.setCategory(category);
 		try {
-			return journalRepository.save(journal);
+			journalRepository.save(journal);
+			notificationService.sendJournalIsPublishedEmail(journal);
+			return journal;
 		} catch (DataIntegrityViolationException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}

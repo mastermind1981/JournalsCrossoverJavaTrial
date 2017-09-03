@@ -4,8 +4,6 @@ import com.crossover.trial.journals.model.Journal;
 import com.crossover.trial.journals.model.User;
 import com.crossover.trial.journals.repository.UserRepository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Service for sending different type of notification via email
+ */
 @Service
-public class NotificationServiceImpl implements NotificationService {
+public class NotificationEmailServiceImpl implements NotificationService {
 
   private EmailService emailService;
   private UserRepository userRepository;
 
   @Autowired
-  public NotificationServiceImpl(EmailService emailService, UserRepository userRepository) {
+  public NotificationEmailServiceImpl(EmailService emailService, UserRepository userRepository) {
     this.emailService = emailService;
     this.userRepository = userRepository;
   }

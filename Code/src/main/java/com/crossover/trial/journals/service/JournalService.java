@@ -12,7 +12,7 @@ public interface JournalService {
 
 	List<Journal> publisherList(Publisher publisher);
 
-	Journal publish(Publisher publisher, Journal journal, Long categoryId);
+	Journal publish(Publisher publisher, String journalUUID, String journalName, Long categoryId);
 
 	void unPublish(Publisher publisher, Long journalId);
 }

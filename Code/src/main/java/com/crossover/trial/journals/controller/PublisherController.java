@@ -51,29 +51,27 @@ public class PublisherController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/publisher/publish")
 	@PreAuthorize("hasRole('PUBLISHER')")
-	public String handleFileUpload(@RequestParam("name") String name, @RequestParam("category")Long categoryId, @RequestParam(value = "file") MultipartFile file,
+	public String handleFileUpload(@RequestParam("name") String journalName, @RequestParam("category")Long categoryId, @RequestParam(value = "file") MultipartFile file,
 			RedirectAttributes redirectAttributes, @AuthenticationPrincipal Principal principal) {
 
 		CurrentUser activeUser = (CurrentUser) ((Authentication) principal).getPrincipal();
 		Optional<Publisher> publisher = publisherRepository.findByUser(activeUser.getUser());
 
-		String uuid = UUID.randomUUID().toString();
+		String journalUUID = UUID.randomUUID().toString();
 
 		if (!file.isEmpty()) {
 			try {
-				fileService.uploadJournalFile(publisher.get().getId(), uuid,file.getInputStream());
-				Journal journal = new Journal();
-				journal.setUuid(uuid);
-				journal.setName(name);
-				journalService.publish(publisher.get(), journal, categoryId);
+				fileService.uploadJournalFile(publisher.get().getId(), journalUUID, file.getInputStream());
+
+				journalService.publish(publisher.get(), journalUUID, journalName, categoryId);
 				return "redirect:/publisher/browse";
 			} catch (Exception e) {
 				redirectAttributes.addFlashAttribute("message",
-						"You failed to publish " + name + " => " + e.getMessage());
+						String.format("You failed to publish %s => %s", journalName, e.getMessage()));
 			}
 		} else {
 			redirectAttributes.addFlashAttribute("message",
-					"You failed to upload " + name + " because the file was empty");
+					String.format("You failed to upload %s because the file was empty", journalName));
 		}
 
 		return "redirect:/publisher/publish";

@@ -39,7 +39,7 @@ public class NotificationServiceTest {
   @Before
   public void setup(){
 
-    notificationService = new NotificationServiceImpl(emailService, userRepository);
+    notificationService = new NotificationEmailServiceImpl(emailService, userRepository);
 
     Category category = categoryRepository.findOne(3l) ;
 
