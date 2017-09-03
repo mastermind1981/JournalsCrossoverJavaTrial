@@ -1,14 +1,12 @@
 package com.crossover.trial.journals.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.security.Principal;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.crossover.trial.journals.model.Journal;
+import com.crossover.trial.journals.model.Publisher;
+import com.crossover.trial.journals.repository.PublisherRepository;
+import com.crossover.trial.journals.service.CurrentUser;
+import com.crossover.trial.journals.service.FileService;
 import com.crossover.trial.journals.service.JournalService;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,21 +21,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.crossover.trial.journals.Application;
-import com.crossover.trial.journals.model.Publisher;
-import com.crossover.trial.journals.repository.PublisherRepository;
-import com.crossover.trial.journals.service.CurrentUser;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.security.Principal;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class PublisherController {
 
 	private final static Logger log = Logger.getLogger(PublisherController.class);
 
-	@Autowired
+
+	private FileService fileService;
+
 	private PublisherRepository publisherRepository;
 
-	@Autowired
 	private JournalService journalService;
+
+	@Autowired
+	public PublisherController(FileService fileService, PublisherRepository publisherRepository, JournalService journalService) {
+		this.fileService = fileService;
+		this.publisherRepository = publisherRepository;
+		this.journalService = journalService;
+	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/publisher/publish")
 	public String provideUploadInfo(Model model) {
@@ -53,10 +61,10 @@ public class PublisherController {
 		Optional<Publisher> publisher = publisherRepository.findByUser(activeUser.getUser());
 
 		String uuid = UUID.randomUUID().toString();
-		File dir = new File(getDirectory(publisher.get().getId()));
+		File dir = new File(fileService.getDirectory(publisher.get().getId()));
 		createDirectoryIfNotExist(dir);
 
-		File f = new File(getFileName(publisher.get().getId(), uuid));
+		File f = new File(fileService.getFileName(publisher.get().getId(), uuid));
 		if (!file.isEmpty()) {
 			try {
 				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
@@ -87,14 +95,6 @@ public class PublisherController {
 			}
 		}
 		return true;
-	}
-
-	public static String getFileName(long publisherId, String uuid) {
-		return getDirectory(publisherId) + "/" + uuid + ".pdf";
-	}
-
-	public static String getDirectory(long publisherId) {
-		return Application.ROOT + "/" + publisherId;
 	}
 
 }

@@ -26,15 +26,23 @@ import com.crossover.trial.journals.model.User;
 import com.crossover.trial.journals.repository.JournalRepository;
 import com.crossover.trial.journals.repository.UserRepository;
 import com.crossover.trial.journals.service.CurrentUser;
+import com.crossover.trial.journals.service.FileService;
 
 @Controller
 public class JournalController {
 
-	@Autowired
+	private FileService fileService;
+
 	private JournalRepository journalRepository;
 
-	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	public JournalController(FileService fileService, JournalRepository journalRepository, UserRepository userRepository) {
+		this.fileService = fileService;
+		this.journalRepository = journalRepository;
+		this.userRepository = userRepository;
+	}
 
 	@ResponseBody
 	@RequestMapping(value = "/view/{id}", method = RequestMethod.GET, produces = "application/pdf")
@@ -48,7 +56,7 @@ public class JournalController {
 		Optional<Subscription> subscription = subscriptions.stream()
 				.filter(s -> s.getCategory().getId().equals(category.getId())).findFirst();
 		if (subscription.isPresent() || journal.getPublisher().getId().equals(user.getId())) {
-			File file = new File(PublisherController.getFileName(journal.getPublisher().getId(), journal.getUuid()));
+			File file = new File(fileService.getFileName(journal.getPublisher().getId(), journal.getUuid()));
 			InputStream in = new FileInputStream(file);
 			return ResponseEntity.ok(IOUtils.toByteArray(in));
 		} else {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import com.crossover.trial.journals.controller.PublisherController;
 import com.crossover.trial.journals.model.Category;
 import com.crossover.trial.journals.model.Journal;
 import com.crossover.trial.journals.model.Publisher;
@@ -27,14 +26,21 @@ public class JournalServiceImpl implements JournalService {
 
 	private final static Logger log = Logger.getLogger(JournalServiceImpl.class);
 
-	@Autowired
+	private FileService fileService;
+
 	private JournalRepository journalRepository;
 
-	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
 	private CategoryRepository categoryRepository;
+
+	@Autowired
+	public JournalServiceImpl(FileService fileService, JournalRepository journalRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
+		this.fileService = fileService;
+		this.journalRepository = journalRepository;
+		this.userRepository = userRepository;
+		this.categoryRepository = categoryRepository;
+	}
 
 	@Override
 	public List<Journal> listAll(User user) {
@@ -76,7 +82,7 @@ public class JournalServiceImpl implements JournalService {
 		if (journal == null) {
 			throw new ServiceException("Journal doesn't exist");
 		}
-		String filePath = PublisherController.getFileName(publisher.getId(), journal.getUuid());
+		String filePath = fileService.getFileName(publisher.getId(), journal.getUuid());
 		File file = new File(filePath);
 		if (file.exists()) {
 			boolean deleted = file.delete();
