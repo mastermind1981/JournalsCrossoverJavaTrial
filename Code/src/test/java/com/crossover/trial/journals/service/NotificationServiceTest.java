@@ -4,12 +4,10 @@ import com.crossover.trial.journals.Application;
 import com.crossover.trial.journals.model.Category;
 import com.crossover.trial.journals.model.Journal;
 import com.crossover.trial.journals.repository.CategoryRepository;
-import com.crossover.trial.journals.repository.UserRepository;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,18 +15,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
+import javax.mail.internet.MimeMessage;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-public class NotificationServiceTest {
-
-  private EmailService emailService = Mockito.mock(EmailService.class);
+public class NotificationServiceTest extends BaseEmailTest{
 
   @Autowired
-  private UserRepository userRepository;
-
   private NotificationService notificationService;
 
   @Autowired
@@ -37,11 +32,10 @@ public class NotificationServiceTest {
   private Journal newJournal;
 
   @Before
-  public void setup(){
+  public void setup() {
+    super.setup();
 
-    notificationService = new NotificationEmailServiceImpl(emailService, userRepository);
-
-    Category category = categoryRepository.findOne(3l) ;
+    Category category = categoryRepository.findOne(3l);
 
     newJournal = new Journal();
     newJournal.setName("Endocrinology Today");
@@ -51,7 +45,8 @@ public class NotificationServiceTest {
   @Test
   public void sendJournalIsPublishedEmailTest() {
     notificationService.sendJournalIsPublishedEmail(newJournal);
-    Mockito.verify(emailService, times(1)).sendEmail(any(), any(), any());
+    MimeMessage[] messages = greenMail.getReceivedMessages();
+    assertEquals("1 message should be sent, for subscriber only",1, messages.length);
   }
 
   @Test
@@ -59,13 +54,15 @@ public class NotificationServiceTest {
     List<Journal> journals = new ArrayList<>();
     journals.add(newJournal);
     notificationService.sendJournalDigest(journals);
-    Mockito.verify(emailService, times(4)).sendEmail(any(), any(), any());
+    MimeMessage[] messages = greenMail.getReceivedMessages();
+    assertEquals("4 message should be sent,for all uasers",4, messages.length);
   }
 
   @Test
   public void sendJournalDigestWithEmptyListTest() {
     List<Journal> journals = new ArrayList<>();
     notificationService.sendJournalDigest(journals);
-    Mockito.verify(emailService, times(0)).sendEmail(any(), any(), any());
+    MimeMessage[] messages = greenMail.getReceivedMessages();
+    assertEquals("Email should not be sent for empty list", 0, messages.length);
   }
 }

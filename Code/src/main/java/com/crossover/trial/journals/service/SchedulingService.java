@@ -25,7 +25,7 @@ public class SchedulingService {
     this.notificationService = notificationService;
   }
 
-  @Scheduled(cron = "*/2 * * * *")
+  @Scheduled(cron = "* */2 * * * *")
   public void sendDigest() {
     Date fromDate = Date.from(LocalDateTime.now().minusMinutes(1).toInstant(OffsetDateTime.now().getOffset()));
     List<Journal> newJournals = journalRepository.findByPublishDateGreaterThan(fromDate);
