@@ -4,7 +4,7 @@ import com.crossover.trial.journals.model.Journal;
 
 import java.util.List;
 
-public interface MailService {
+public interface NotificationService {
 
   void sendJournalIsPublishedEmail(Journal journal);
 

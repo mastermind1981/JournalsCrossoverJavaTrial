@@ -1,12 +1,10 @@
 package com.crossover.trial.journals.service;
 
-import com.crossover.trial.journals.model.Journal;
 import com.crossover.trial.journals.model.User;
-import com.crossover.trial.journals.repository.UserRepository;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -15,52 +13,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-
 @Service
-public class MailServiceImpl implements MailService {
+public class EmailServiceImpl implements EmailService {
 
   private JavaMailSender javaMailSender;
   private VelocityEngine velocityEngine;
-  private UserRepository userRepository;
 
-  private final static Logger log = LoggerFactory.getLogger(MailServiceImpl.class);
+  private final static Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
 
   @Autowired
-  public MailServiceImpl(JavaMailSender javaMailSender, VelocityEngine velocityEngine, UserRepository userRepository) {
+  public EmailServiceImpl(JavaMailSender javaMailSender, VelocityEngine velocityEngine) {
     this.javaMailSender = javaMailSender;
     this.velocityEngine = velocityEngine;
-    this.userRepository = userRepository;
   }
 
-  @Override
-  public void sendJournalIsPublishedEmail(Journal journal) {
-    List<User> subscribedUsers = userRepository.findBySubscriptionsCategory(journal.getCategory());
-    for (User user : subscribedUsers) {
-      Map model = new HashMap();
-      model.put("user", user);
-      model.put("journal", journal);
-      sendEmail(user, model, "new-arrivals.vm");
-    }
-  }
-
-  @Override
-  public void sendJournalDigest(List<Journal> journals) {
-    if (journals != null && !journals.isEmpty()) {
-      List<User> allUsers = userRepository.findAll();
-      for (User user : allUsers) {
-        Map model = new HashMap();
-        model.put("user", user);
-        model.put("journals", journals);
-        sendEmail(user, model, "digest.vm");
-      }
-    }
-  }
-
-  private void sendEmail(User user, Map model, String templateName) {
+  public void sendEmail(User user, Map model, String templateName) {
     try {
       MimeMessagePreparator preparator = mimeMessage -> {
         MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
@@ -72,6 +41,7 @@ public class MailServiceImpl implements MailService {
         message.setSubject("News service updates");
       };
       javaMailSender.send(preparator);
+      log.debug("Notification is sent to user ID:{}", user.getId());
     } catch (Exception e) {
       log.error("Could not notify user with ID:{}", user.getId());
       log.error("Notification was not sent", e);
