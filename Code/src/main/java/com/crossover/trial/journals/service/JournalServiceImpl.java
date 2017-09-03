@@ -1,25 +1,24 @@
 package com.crossover.trial.journals.service;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import com.crossover.trial.journals.model.Category;
 import com.crossover.trial.journals.model.Journal;
 import com.crossover.trial.journals.model.Publisher;
+import com.crossover.trial.journals.model.Subscription;
 import com.crossover.trial.journals.model.User;
 import com.crossover.trial.journals.repository.CategoryRepository;
+import com.crossover.trial.journals.repository.JournalRepository;
 import com.crossover.trial.journals.repository.UserRepository;
-import com.crossover.trial.journals.model.Subscription;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.crossover.trial.journals.repository.JournalRepository;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class JournalServiceImpl implements JournalService {
@@ -82,17 +81,10 @@ public class JournalServiceImpl implements JournalService {
 		if (journal == null) {
 			throw new ServiceException("Journal doesn't exist");
 		}
-		String filePath = fileService.getFileName(publisher.getId(), journal.getUuid());
-		File file = new File(filePath);
-		if (file.exists()) {
-			boolean deleted = file.delete();
-			if (!deleted) {
-				log.error("File " + filePath + " cannot be deleted");
-			}
-		}
 		if (!journal.getPublisher().getId().equals(publisher.getId())) {
 			throw new ServiceException("Journal cannot be removed");
 		}
+		fileService.deleteJournalFile(publisher.getId(), journal.getUuid());
 		journalRepository.delete(journal);
 	}
 }

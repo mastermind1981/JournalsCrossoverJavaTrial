@@ -1,7 +1,12 @@
 package com.crossover.trial.journals.service;
 
-public interface FileService {
-    String getFileName(long publisherId, String uuid);
+import java.io.InputStream;
 
-    String getDirectory(long id);
+public interface FileService {
+
+    byte[] getJournalFileAsByteArray(long publisherId, String journalUUID);
+
+    void uploadJournalFile(long publisherId, String journalUUID, InputStream inputStream);
+
+    void deleteJournalFile(long publisherId, String journalUUID);
 }
