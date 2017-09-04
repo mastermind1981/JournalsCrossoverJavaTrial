@@ -4,8 +4,9 @@
 
         <div>
             We are happy to notify you that since last digest email we added new articles! <br/>
-            #foreach( $journal in $journals )
-            <b>Category:</b> ${journal.category.name} <b>Name:</b>${journal.name} <br/>
+            <#foreach journal in journals >
+                <b>Category:</b> ${journal.category.name} <b>Name:</b>${journal.name} <br/>
+            </#foreach>
             #end
 
         </div>

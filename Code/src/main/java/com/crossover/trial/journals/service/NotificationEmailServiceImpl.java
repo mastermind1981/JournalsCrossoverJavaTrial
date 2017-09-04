@@ -33,7 +33,7 @@ public class NotificationEmailServiceImpl implements NotificationService {
       Map model = new HashMap();
       model.put("user", user);
       model.put("journal", journal);
-      emailService.sendEmail(user, model, "new-arrivals.vm");
+      emailService.sendEmail(user, model, "new-arrivals.ftl");
     }
   }
 
@@ -45,7 +45,7 @@ public class NotificationEmailServiceImpl implements NotificationService {
         Map model = new HashMap();
         model.put("user", user);
         model.put("journals", journals);
-        emailService.sendEmail(user, model, "digest.vm");
+        emailService.sendEmail(user, model, "digest.ftl");
       }
     }
   }

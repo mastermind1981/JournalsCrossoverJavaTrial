@@ -57,7 +57,7 @@ public class EmailServiceTest extends BaseEmailTest {
     model.put("journal", newJournal);
     model.put("user", user);
 
-    emailService.sendEmail(user, model, "new-arrivals.vm");
+    emailService.sendEmail(user, model, "new-arrivals.ftl");
     MimeMessage[] messages = greenMail.getReceivedMessages();
 
     InputStream stream = getClass().getClassLoader().getResourceAsStream("new-arrivals-email.html");

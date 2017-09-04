@@ -13,21 +13,21 @@ services:
     ports:
      - "3306:3306"
 
-  news-application:
-    container_name: news-application
-    environment:
-       - MYSQL_ROOT_PASSWORD=admin
-       - MYSQL_DATABASE=journals
-       - MYSQL_ENV_MYSQL_ROOT_PASSWORD=admin
-       - MYSQL_PORT_3306_TCP_PORT=3306
-    build:
-      context: .
-      dockerfile: docker/news-application/Dockerfile
-      args:
-        source: .
-        destination: /
-        startScript: docker/news-application/start-app.sh
-    ports:
-     - "8080:8080"
-    depends_on:
-     - mysql
+#  news-application:
+#    container_name: news-application
+#    environment:
+#       - MYSQL_ROOT_PASSWORD=admin
+#       - MYSQL_DATABASE=journals
+#       - MYSQL_ENV_MYSQL_ROOT_PASSWORD=admin
+#       - MYSQL_PORT_3306_TCP_PORT=3306
+#    build:
+#      context: .
+#      dockerfile: docker/news-application/Dockerfile
+#      args:
+#        source: .
+#        destination: /
+#        startScript: docker/news-application/start-app.sh
+#    ports:
+#     - "8080:8080"
+#    depends_on:
+#     - mysql
