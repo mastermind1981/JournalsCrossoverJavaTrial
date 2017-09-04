@@ -31,6 +31,8 @@ public class MailConfig {
   private String username;
   @Value("${mail.password}")
   private String password;
+  @Value("${mail.smtp.socketFactory.class}")
+  private String socketFactoryClass;
 
   @Bean
   public JavaMailSender javaMailSender() {
@@ -43,6 +45,7 @@ public class MailConfig {
     mailProperties.put("mail.smtp.socketFactory.port", socketPort);
     mailProperties.put("mail.smtp.socketFactory.fallback", fallback);
     mailProperties.put("mail.smtp.ssl.enable", false);
+    mailProperties.put("mail.smtp.socketFactory.class", socketFactoryClass);
 
     mailSender.setJavaMailProperties(mailProperties);
     mailSender.setHost(host);
