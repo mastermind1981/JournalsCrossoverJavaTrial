@@ -7,7 +7,6 @@
             <#foreach journal in journals >
                 <b>Category:</b> ${journal.category.name} <b>Name:</b>${journal.name} <br/>
             </#foreach>
-            #end
 
         </div>
 
