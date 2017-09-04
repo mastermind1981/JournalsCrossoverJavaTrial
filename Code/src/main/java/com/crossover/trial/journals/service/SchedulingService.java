@@ -29,11 +29,12 @@ public class SchedulingService {
     this.notificationService = notificationService;
   }
 
-  //  @Scheduled(cron = "0 2 0 ? * *")
-  @Scheduled(cron = "0 0/2 * * * ?")
+
+//  @Scheduled(cron = "0 0/2 * * * ?")
+  @Scheduled(cron = "0 0 3 1/1 * ? *")
   public void sendDigest() {
     log.info("Scheduled action executed");
-    Date fromDate = Date.from(LocalDateTime.now().minusMinutes(2).toInstant(OffsetDateTime.now().getOffset()));
+    Date fromDate = Date.from(LocalDateTime.now().minusDays(1).toInstant(OffsetDateTime.now().getOffset()));
     List<Journal> newJournals = journalRepository.findByPublishDateGreaterThan(fromDate);
     notificationService.sendJournalDigest(newJournals);
   }
