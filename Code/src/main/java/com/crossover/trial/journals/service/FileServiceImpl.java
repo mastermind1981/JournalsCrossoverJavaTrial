@@ -37,6 +37,7 @@ public class FileServiceImpl implements FileService {
 
   }
 
+  @Override
   public void uploadJournalFile(long publisherId, String journalUUID, InputStream inputStream) {
     File dir = new File(getPublisherDirectoryPath(publisherId));
     createDirectoryIfNotExist(dir);
